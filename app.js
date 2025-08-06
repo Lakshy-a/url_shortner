@@ -2,7 +2,8 @@ import express from 'express'
 import dotenv from 'dotenv'
 import { connectMongodb } from './src/config/mongodb.config.js';
 import shortUrlRoutes from './src/routes/shortUrl.route.js';
-import { shortUrl } from './src/models/urlShortner.model.js';
+import { redirectShortUrl } from './src/controllers/shortUrl.controller.js';
+import globalErrorHandler from './src/middlewares/errorHandler.js';
 
 const app = express();
 
@@ -14,20 +15,10 @@ app.use(express.urlencoded({ extended: true })); // to handle form data
 const PORT = process.env.PORT;
 
 app.use("/api/create", shortUrlRoutes);
+app.get("/:shortUrlId", redirectShortUrl);
 
-app.get("/:shortUrlId", async (req, res) => {
-    const { shortUrlId } = req.params;
-    console.log("Short URL ID:", req.params);
-    const urlData = await shortUrl.findOne({ shortUrl: shortUrlId });
-    if (!urlData) {
-        return res.status(404).json({ error: 'URL not found' });
-    }
-    console.log("Found URL Data:", urlData);
+app.use(globalErrorHandler);
 
-    urlData.clicks += 1;
-    await urlData.save();
-    res.redirect(urlData.completeUrl);
-});
 
 app.listen(PORT, () => {
     connectMongodb();
