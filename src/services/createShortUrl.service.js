@@ -1,16 +1,20 @@
+import { saveShortUrl } from "../dao/shortUrl.dao.js";
 import { shortUrl } from "../models/urlShortner.model.js";
 import { generateNanoId } from "../utils/helper.js";
 
 export const createShortUrlService = async (url) => {
     const shortUrlId = generateNanoId(7);
 
-    const newUrl = new shortUrl({
-        completeUrl: url,
-        shortUrl: shortUrlId,
-        clicks: 0
-    });
+    await saveShortUrl(url, shortUrlId);
 
-    await newUrl.save()
-    
     return `${process.env.APP_URL}/${shortUrlId}`;
+}
+
+export const redirectShortUrlService = async (shortUrlId) => {
+    const urlData = await shortUrl.findOneAndUpdate({ shortUrl: shortUrlId }, { $inc: { clicks: 1 } }, { new: true });
+    if (!urlData) {
+        return res.status(404).json({ error: 'URL not found' });
+    }
+
+    return await urlData.save();
 }
