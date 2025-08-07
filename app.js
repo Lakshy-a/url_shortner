@@ -17,13 +17,16 @@ app.use(express.urlencoded({ extended: true })); // to handle form data
 
 const PORT = process.env.PORT;
 
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ message: 'Server is healthy!' });
+});
 app.use("/api/create", shortUrlRoutes);
 app.get("/:shortUrlId", redirectShortUrl);
 
 app.use(globalErrorHandler);
 
 
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
     connectMongodb();
-    console.log(`Server is running on port http://localhost:${PORT}`)
+    console.log(`Server is running on port ${PORT}`)
 })
