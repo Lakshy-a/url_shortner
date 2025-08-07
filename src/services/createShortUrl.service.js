@@ -11,10 +11,11 @@ export const createShortUrlService = async (url) => {
 }
 
 export const redirectShortUrlService = async (shortUrlId) => {
-    const urlData = await shortUrl.findOneAndUpdate({ shortUrl: shortUrlId }, { $inc: { clicks: 1 } }, { new: true });
-    if (!urlData) {
-        return res.status(404).json({ error: 'URL not found' });
-    }
+    const urlData = await shortUrl.findOneAndUpdate(
+        { shortUrl: shortUrlId },
+        { $inc: { clicks: 1 } },
+        { new: true }
+    );
 
-    return await urlData.save();
+    return urlData || null;
 }
