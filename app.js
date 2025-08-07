@@ -4,8 +4,11 @@ import { connectMongodb } from './src/config/mongodb.config.js';
 import shortUrlRoutes from './src/routes/shortUrl.route.js';
 import { redirectShortUrl } from './src/controllers/shortUrl.controller.js';
 import globalErrorHandler from './src/middlewares/errorHandler.js';
+import cors from 'cors';
 
 const app = express();
+
+app.use(cors());
 
 dotenv.config();
 
